@@ -1,0 +1,4 @@
+C:\Users\User\Desktop\nic\test\x64\Debug\test.exe
+C:\Users\nic14\Desktop\раб\test\x64\Debug\test.exe
+C:\Users\User\Desktop\nic\test1\x64\Debug\test.exe
+E:\на гид\test1\x64\Debug\test.exe
