@@ -1,4 +1,4 @@
-﻿
+
 #include <iostream>
 #include <string>//++ строки нужно
 #include <ctime>//-+ таймер
@@ -13,14 +13,7 @@ unsigned int search_time = 0;
 void in(unsigned long long& num)
 {
     char pref;
-    while (1)
-    {
         cin >> pref;
-        if (pref == 'b' or pref == 'h')
-            break;
-        else
-            std::cout << "Вы ввели не корректный префикс ('b' либо 'h')" << endl;
-    }
 
     if (pref == 'b')
     {
@@ -192,7 +185,7 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
 
 void Nach(unsigned long long num1, unsigned long long num2, long long& num33)
 {
-    short expLen = 8, manLen = 10;//|8,23|,|11,52|,|8,10|
+    short expLen = 8, manLen = 23;//|8,23|,|11,52|,|8,10|
 
     if(num1==0 and num2==0 and num33==1)
     {
@@ -234,7 +227,11 @@ int main()
     long long num3 = 1;
     infnan = "";
     //inFile();//ввод через файл
+    unsigned int start_time1 = clock();
     Nach(num1, num2, num3);//ввод вручную
+    unsigned int end_time1 = clock();
+    if(search_time==0)
+        search_time = end_time1 - start_time1;
 
     if (infnan == "inf" or infnan=="nan")// только для ввода в ручную если через файл то закоментить 
         cout << infnan <<endl;
