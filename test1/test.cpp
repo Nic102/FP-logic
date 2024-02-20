@@ -159,10 +159,15 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
 
             if (c >= (0b1ll << (manLen + 1)))
             {
+                if ((c & 1) == 1) 
+                {
+                    tail >> 1;
+                    tail |= 0x8000000000000000;
+                }  
                 c >>= 1;
                 otvexp++;
             }
-
+            
             if ((((c & 1) == 1) and ((tail & 0x8000000000000000) == 0x8000000000000000)) or (((c & 1) == 0) and (tail > 0x8000000000000000)))
                 c++;
         }
