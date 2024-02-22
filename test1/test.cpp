@@ -13,7 +13,14 @@ unsigned int search_time = 0;
 void in(unsigned long long& num)
 {
     char pref;
+    while (1)
+    {
         cin >> pref;
+        if (pref == 'b' or pref == 'h')
+            break;
+        else
+            std::cout << "Вы ввели не корректный префикс ('b' либо 'h')" << endl;
+    }
 
     if (pref == 'b')
     {
@@ -73,6 +80,7 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
         {
             manA |= 0b1ll << manLen;
             manB |= 0b1ll << manLen;
+
             if (expA > expB)
             {
                 tailB = (tailB >> (expA - expB)) | (manB << (64 - (expA - expB)));
@@ -96,6 +104,7 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
                 otvsign = 0;
             else
                 otvsign = 0;
+
             if (signA != signB)
             {
                 if (manA < manB)
@@ -108,8 +117,10 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
                     manB = ~manB;
                     tailB = ~tailB;
                 }
+
                 c = manA + manB;
                 tail = (tailA + tailB) + 1;
+
                 if (tail == 0)
                     c += 1;
             }
@@ -118,13 +129,16 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
                 c = manA + manB;
                 tail = tailA + tailB;
             }
+
             int index2 = 0;
             index2 = log(c) / log(2);
+
             if (manLen > index2)
             {
                 int razn = 0;
                 bool razn_otvexp = 0;
                 short razn1 = 0;
+
                 razn = manLen - index2;
                 if (razn > otvexp)
                 {
@@ -132,15 +146,26 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
                     razn = otvexp - 1;
                 }
                 c <<= razn;
-                if (tail && 0x8000000000000000 == 0x8000000000000000) 
+
+                tail >>= 1;
+                tail &= 0x7FFFFFFFFFFFFFFF;
+                c |= tail >> (63 - razn);
+                tail << razn + 1;
+
+                if ((tail && 0x8000000000000000 == 0x8000000000000000) and ((c & 1) == 1))
+                {
                     c++;
-                
-                if (expA < expB)
+                }
+
+                /*if (expA < expB)
                     razn1 = razn + 1;
                 else
                     razn1 = razn;
-                c |= (tail >> (64 - razn)) & (0x7FFFFFFFFFFFFFFF >> (64 - razn1));
+
+                c |= (tail >> (64 - razn)) & (0x7FFFFFFFFFFFFFFF >> (64 - razn1));*/
+
                 tail <<= razn;
+
                 if (otvexp - razn < 0)
                     otvexp = 0;
                 else if (razn_otvexp == 1)
@@ -148,10 +173,12 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
                 else
                     otvexp -= razn;
             }
+
             if (c >= (0b1ll << (manLen + 1)))
             {
                 if ((c & 1) == 1) 
                 {
+
                     tail >>= 1;
                     tail |= 0x8000000000000000;
                 }
@@ -160,13 +187,17 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
                     tail >>= 1;
                     tail &= 0x7FFFFFFFFFFFFFFF;
                 }
+
                 c >>= 1;
                 otvexp++;
+                
             }
+
             if ((((c & 1) == 1) and ((tail & 0x8000000000000000) == 0x8000000000000000)) or (((c & 1) == 0) and (tail > 0x8000000000000000)))
                 c++;
         }
-        long long otvmant = c;
+
+        long long otvmant = c;//проверка
 
         c &= ~(0b1ll << manLen);
         c |= (otvexp << manLen);
@@ -226,17 +257,13 @@ int main()
     long long num3 = 1;
     infnan = "";
     //inFile();//ввод через файл
-    unsigned int start_time1 = clock();
     Nach(num1, num2, num3);//ввод вручную
-    unsigned int end_time1 = clock();
-    if(search_time==0)
-        search_time = end_time1 - start_time1;
 
     if (infnan == "inf" or infnan=="nan")// только для ввода в ручную если через файл то закоментить 
         cout << infnan <<endl;
     else if(infnan=="ch")
         cout << hex << num3 << endl;
 
-    std::cout << "                      Clock ------ " << search_time / 1000.0 << " ------ " << endl << endl;
-    //return main();// только для ввода в ручную если через файл то закоментить  
+    //std::cout << "                      Clock ------ " << search_time / 1000.0 << " ------ " << endl << endl;
+    return main();// только для ввода в ручную если через файл то закоментить  
 }
