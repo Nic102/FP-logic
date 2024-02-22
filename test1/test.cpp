@@ -150,21 +150,18 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
                 tail >>= 1;
                 tail &= 0x7FFFFFFFFFFFFFFF;
                 c |= tail >> (63 - razn);
-                tail << razn + 1;
+                tail <<= razn + 1;
 
-                if ((tail && 0x8000000000000000 == 0x8000000000000000) and ((c & 1) == 1))
+                if (((tail && 0x8000000000000000) == 0x8000000000000000) and ((c & 1) == 1))
                 {
                     c++;
+                    tail = 0;
                 }
-
-                /*if (expA < expB)
-                    razn1 = razn + 1;
-                else
-                    razn1 = razn;
-
-                c |= (tail >> (64 - razn)) & (0x7FFFFFFFFFFFFFFF >> (64 - razn1));*/
-
-                tail <<= razn;
+                else if ((tail>0x8000000000000000)and((c & 1) == 0))
+                {
+                    c++;
+                    tail = 0;
+                }
 
                 if (otvexp - razn < 0)
                     otvexp = 0;
