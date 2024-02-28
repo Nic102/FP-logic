@@ -58,155 +58,172 @@ void Sum(long long a, long long b, long long& c, short expLen, short manLen)
     int expB = ((b >> manLen) & (0xffff >> (16 - expLen)));
     long long manB = b & (0x7FFFFFFFFFFFFFFF >> (63 - manLen));
 
-    if (((expA == (pow(2, expLen) - 1) and manA == 0) and (signA == 0 or signA == 1)) or ((expB == (pow(2, expLen) - 1) and manB == 0) and (signB == 0 or signB == 1)))
-        cout << "";
-    else if (((expA == (pow(2, expLen) - 1) and manA > 0) and (signA == 0 or signA == 1)) or ((expB == (pow(2, expLen) - 1) and manB > 0) and (signB == 0 or signB == 1)))
-        cout << "";
+    if ((signA != signB) and (expA == expB and manA == manB)) 
+        c = 0;
     else
-    { 
-        if ((expA - expB > manLen) and expA > expB)
-        {
-            c = manA;
-            otvexp = expA;
-            otvsign = signA;
-        }
-        else if ((expB - expA > manLen) and expA < expB)
-        {
-            c = manB;
-            otvexp = expB;
-            otvsign = signB;
-        }
+    {
+        if (((expA == (pow(2, expLen) - 1) and manA == 0) and (signA == 0 or signA == 1)) or ((expB == (pow(2, expLen) - 1) and manB == 0) and (signB == 0 or signB == 1)))
+            cout << "";
+        else if (((expA == (pow(2, expLen) - 1) and manA > 0) and (signA == 0 or signA == 1)) or ((expB == (pow(2, expLen) - 1) and manB > 0) and (signB == 0 or signB == 1)))
+            cout << "";
         else
         {
-            manA |= 0b1ll << manLen;
-            manB |= 0b1ll << manLen;
-
-            if (expA > expB)
+            if ((expA - expB > manLen) and expA > expB)
             {
-                tailB = (tailB >> (expA - expB)) | (manB << (64 - (expA - expB)));
-                manB >>= (expA - expB);
+                c = manA;
                 otvexp = expA;
+                otvsign = signA;
             }
-            else if (expA < expB)
+            else if ((expB - expA > manLen) and expA < expB)
             {
-                tailA = (tailA >> (expB - expA)) | (manA << (64 - (expB - expA)));
-                manA >>= (expB - expA);
+                c = manB;
                 otvexp = expB;
-            }
-            else if (expA == expB)
-                otvexp = expB;
-
-            if ((manA > manB) and (signA == 1))
-                otvsign = 1;
-            else if ((manA < manB) and (signB == 1))
-                otvsign = 1;
-            else if (manA == manB and signA != signB)
-                otvsign = 0;
-            else
-                otvsign = 0;
-
-            if (signA != signB)
-            {
-                if (manA < manB)
-                {
-                    manA = ~manA;
-                    tailA = ~tailA;
-                }
-                else if (manA > manB)
-                {
-                    manB = ~manB;
-                    tailB = ~tailB;
-                }
-
-                c = manA + manB;
-                tail = (tailA + tailB) + 1;
-
-                if (tail == 0)
-                    c += 1;
+                otvsign = signB;
             }
             else
             {
-                c = manA + manB;
-                tail = tailA + tailB;
-            }
+                manA |= 0b1ll << manLen;
+                manB |= 0b1ll << manLen;
 
-            int index2 = 0;
-            index2 = log(c) / log(2);
-
-            if (manLen > index2)
-            {
-                int razn = 0;
-                bool razn_otvexp = 0;
-                short razn1 = 0;
-
-                razn = manLen - index2;
-                if (razn > otvexp)
+                if (expA > expB)
                 {
-                    razn_otvexp = 1;
-                    razn = otvexp - 1;
+                    tailB = (tailB >> (expA - expB)) | (manB << (64 - (expA - expB)));
+                    manB >>= (expA - expB);
+                    otvexp = expA;
                 }
-                c <<= razn;
-
-                tail >>= 1;
-                tail &= 0x7FFFFFFFFFFFFFFF;
-                c |= tail >> (63 - razn);
-                tail <<= razn + 1;
-
-                if (((tail && 0x8000000000000000) == 0x8000000000000000) and ((c & 1) == 1))
+                else if (expA < expB)
                 {
-                    c++;
-                    tail = 0;
+                    tailA = (tailA >> (expB - expA)) | (manA << (64 - (expB - expA)));
+                    manA >>= (expB - expA);
+                    otvexp = expB;
                 }
-                else if ((tail>0x8000000000000000)and((c & 1) == 0))
-                {
-                    c++;
-                    tail = 0;
-                }
+                else if (expA == expB)
+                    otvexp = expB;
 
-                if (otvexp - razn < 0)
-                    otvexp = 0;
-                else if (razn_otvexp == 1)
-                    otvexp -= razn + 1;
+                if ((manA > manB) and (signA == 1))
+                    otvsign = 1;
+                else if ((manA < manB) and (signB == 1))
+                    otvsign = 1;
+                else if (manA == manB and ((signA == signB) and signA==0b1))//
+                    otvsign = 1;//
+                else if (manA == manB and signA != signB)
+                    otvsign = 0;
                 else
-                    otvexp -= razn;
-            }
+                    otvsign = 0;
 
-            if (c >= (0b1ll << (manLen + 1)))
-            {
-                if ((c & 1) == 1) 
+                if (signA != signB)
                 {
+                    if (manA < manB)
+                    {
+                        manA = ~manA;
+                        tailA = ~tailA;
+                    }
+                    else if (manA > manB)
+                    {
+                        manB = ~manB;
+                        tailB = ~tailB;
+                    }
 
-                    tail >>= 1;
-                    tail |= 0x8000000000000000;
+                    c = manA + manB;
+                    tail = (tailA + tailB) + 1;
+
+                    if (tail == 0)
+                        c += 1;
                 }
-                else 
+                else
                 {
+                    c = manA + manB;
+                    tail = tailA + tailB;
+                }
+
+                int index2 = 0;
+                index2 = log(c) / log(2);
+
+                if (manLen > index2)
+                {
+                    int razn = 0;
+                    bool razn_otvexp = 0;
+                    short razn1 = 0;
+
+                    razn = manLen - index2;
+                    if (razn > otvexp)
+                    {
+                        razn_otvexp = 1;
+                        razn = otvexp - 1;
+                    }
+                    c <<= razn;
+
                     tail >>= 1;
                     tail &= 0x7FFFFFFFFFFFFFFF;
+                    c |= tail >> (63 - razn);
+                    tail <<= razn + 1;
+
+                    if (((tail && 0x8000000000000000) == 0x8000000000000000) and ((c & 1) == 1))
+                    {
+                        c++;
+                        tail = 0;
+                    }
+                    else if ((tail > 0x8000000000000000) and ((c & 1) == 0))
+                    {
+                        c++;
+                        tail = 0;
+                    }
+
+                    /*if (expA < expB)
+                        razn1 = razn + 1;
+                    else
+                        razn1 = razn;
+
+                    c |= (tail >> (64 - razn)) & (0x7FFFFFFFFFFFFFFF >> (64 - razn1));*/
+
+                    //tail <<= razn;
+
+                    if (otvexp - razn < 0)
+                        otvexp = 0;
+                    else if (razn_otvexp == 1)
+                        otvexp -= razn + 1;
+                    else
+                        otvexp -= razn;
                 }
 
-                c >>= 1;
-                otvexp++;
-                
+                if (c >= (0b1ll << (manLen + 1)))
+                {
+                    if ((c & 1) == 1)
+                    {
+
+                        tail >>= 1;
+                        tail |= 0x8000000000000000;
+                    }
+                    else
+                    {
+                        tail >>= 1;
+                        tail &= 0x7FFFFFFFFFFFFFFF;
+                    }
+
+                    c >>= 1;
+                    otvexp++;
+
+                }
+
+                if ((((c & 1) == 1) and ((tail & 0x8000000000000000) == 0x8000000000000000)) or (((c & 1) == 0) and (tail > 0x8000000000000000)))
+                    c++;
             }
 
-            if ((((c & 1) == 1) and ((tail & 0x8000000000000000) == 0x8000000000000000)) or (((c & 1) == 0) and (tail > 0x8000000000000000)))
-                c++;
+            long long otvmant = c;//проверка
+
+            c &= ~(0b1ll << manLen);
+            c |= (otvexp << manLen);
+            c |= (otvsign << manLen + expLen);
+
+            if ((otvexp == (pow(2, expLen) - 1) and otvmant == 0) and (otvsign == 0 or otvsign == 1))
+                infnan = "inf";
+            else if ((otvexp == (pow(2, expLen) - 1) and otvmant > 0) and (otvsign == 0 or otvsign == 1))
+                infnan = "nan";
+            else
+                infnan = "ch";
         }
-
-        long long otvmant = c;//проверка
-
-        c &= ~(0b1ll << manLen);
-        c |= (otvexp << manLen);
-        c |= (otvsign << manLen + expLen);
-
-        if ((otvexp == (pow(2, expLen) - 1) and otvmant == 0) and (otvsign == 0 or otvsign == 1))
-            infnan = "inf";
-        else if ((otvexp == (pow(2, expLen) - 1) and otvmant > 0) and (otvsign == 0 or otvsign == 1))
-            infnan = "nan";
-        else
-            infnan = "ch";
     }
+    infnan = "ch";
 }
 
 
